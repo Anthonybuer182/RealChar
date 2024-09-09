@@ -1,32 +1,64 @@
+# 数据库迁移
 alembic==1.11.1
+# 异步控制台 通过命令行进行异步交互
 aioconsole==0.6.2
+# 访问claude大模型的接口
 anthropic==0.8.1
+# 网页抓取数据解析html
 beautifulsoup4==4.12.2
+# 数据矢量存储
 chromadb==0.4.13
+# edge浏览器进行文本转语音服务
 edge-tts==6.1.9
+# 用于处理表情符
 emoji==2.9.0
+# 安装 FastAPI 和所有可选依赖
 fastapi[all]==0.103.2
+# 语音识别将语音转成文本
 faster_whisper==0.9.0
+# 与Firebase后端服务进行安全验证
 firebase_admin==6.2.0
+# 将音频变成文本
 google-cloud-speech==2.23.0
+# 异步请求
 httpx==0.25.0
+# 与大语言模型进行交互的库
 langchain==0.0.308
+# 与大语言模型进行交互的库
 llama_index==0.8.39.post2
+# 数据计算与分析库
 numpy==1.26.0
+# 与OpenAI的API进行交互
 openai==0.27.8
+# postgre的插件用于支持向量存储和检索
 pgvector==0.2.3
+# 适配器用于python程序和postgre交互
 psycopg2-binary==2.9.9
+# 处理音频的书如何输出
 pyaudio==0.2.13
+# 用于创建和验证数据模型的
 pydantic==2.4.2
+# 音频处理相关库 音频的剪裁和转换
 pydub==0.25.1
+# 对pdf处理的相关库
 pypdf==3.16.2
+# python的测试框架
 pytest==7.4.2
+# 加载环境变量的库
 python-dotenv==1.0.0
+# 读写锁使得线程同步
 readerwriterlock==1.0.9
+# 用于处理大语言模型的链式调用
 rebyte-langchain>=0.0.5
+# 用于发送http请求和处理响应
 Requests==2.31.0
+# 播放音频文件
 simpleaudio==1.0.4
+# 将语音转成文本
 SpeechRecognition==3.10.0
+# 访问和管理关系型数据库的工具包
 SQLAlchemy==2.0.21
+# 一般用于构建web应用和api
 starlette==0.27
+# 集成短信，语音通话，视频通话
 twilio==8.9.0
