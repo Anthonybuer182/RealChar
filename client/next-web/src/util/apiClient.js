@@ -19,6 +19,7 @@ const fetcher = ([url, token]) => {
 };
 
 export function useMyCharacters() {
+  console.log('api:' + 'function()');
   const { token } = useAppStore();
   const { isLoading, error, data } = useSWR(
     [`${getApiServerUrl()}/characters`, token],
@@ -37,6 +38,7 @@ export function useMyCharacters() {
 }
 
 export async function generateSystemPrompt(name, background, accessToken) {
+  console.log('api:' + 'generateSystemPrompt()');
   const url = getApiServerUrl() + '/system_prompt';
   const response = await fetch(url, {
     method: 'POST',
@@ -58,6 +60,7 @@ export async function generateSystemPrompt(name, background, accessToken) {
 }
 
 export async function createCharacter(characterRequest, accessToken) {
+  console.log('api:' + 'createCharacter()');
   const url = getApiServerUrl() + '/create_character';
   const response = await fetch(url, {
     method: 'POST',
@@ -76,6 +79,7 @@ export async function createCharacter(characterRequest, accessToken) {
 }
 
 export async function deleteCharacter(character_id, accessToken) {
+  console.log('api:' + 'deleteCharacter()');
   const url = getApiServerUrl() + '/delete_character';
   const response = await fetch(url, {
     method: 'POST',
@@ -96,6 +100,7 @@ export async function deleteCharacter(character_id, accessToken) {
 }
 
 export async function uploadFile(file, accessToken) {
+  console.log('api:' + 'uploadFile()');
   if (fileUrlMap.has(file)) {
     console.log('Cache has file ' + file.name);
     return fileUrlMap.get(file);
@@ -121,6 +126,7 @@ export async function uploadFile(file, accessToken) {
 }
 
 export async function cloneVoice(files, accessToken) {
+  console.log('api:' + 'cloneVoice()');
   // Check if all files are uploaded
   for (const file of files) {
     if (!fileUrlMap.has(file)) {
@@ -148,6 +154,7 @@ export async function cloneVoice(files, accessToken) {
 }
 
 export async function getCharacter(character_id, accessToken) {
+  console.log('api:' + 'getCharacter()');
   const url = getApiServerUrl() + '/get_character?character_id=' + character_id;
   const response = await fetch(url, {
     method: 'GET',
@@ -162,6 +169,7 @@ export async function getCharacter(character_id, accessToken) {
 }
 
 export async function editCharacter(editCharacterRequest, accessToken) {
+  console.log('api:' + 'editCharacter()');
   const url = getApiServerUrl() + '/edit_character';
   const response = await fetch(url, {
     method: 'POST',
@@ -180,6 +188,7 @@ export async function editCharacter(editCharacterRequest, accessToken) {
 }
 
 export async function makeTwilioCall(number, vad_threshold, character_id) {
+  console.log('api:' + 'makeTwilioCall()');
   const url = getApiServerUrl() + '/twilio/call';
   const response = await fetch(url, {
     method: 'POST',
@@ -201,6 +210,7 @@ export async function makeTwilioCall(number, vad_threshold, character_id) {
 }
 
 export async function generateHighlight(generateHighlightRequest, accessToken) {
+  console.log('api:' + 'generateHighlight()');
   const url = getApiServerUrl() + '/generate_highlight';
   const response = await fetch(url, {
     method: 'POST',

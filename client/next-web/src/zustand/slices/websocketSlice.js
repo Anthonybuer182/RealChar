@@ -7,6 +7,7 @@ export const createWebsocketSlice = (set, get) => ({
   socketIsOpen: false,
 
   sendOverSocket: (data) => {
+    console.log('socket:' + 'sendOverSocket()');
     if (get().socket && get().socket.readyState === WebSocket.OPEN) {
       get().socket.send(data);
       console.log('message sent to server');
@@ -16,6 +17,7 @@ export const createWebsocketSlice = (set, get) => ({
   },
 
   socketOnMessageHandler: (event) => {
+    console.log('socket:' + 'socketOnMessageHandler()');
     if (typeof event.data === 'string') {
       const message = event.data;
       if (message === '[end]\n' || message.match(/\[end=([a-zA-Z0-9]+)]/)) {
@@ -88,6 +90,7 @@ export const createWebsocketSlice = (set, get) => ({
   },
 
   connectSocket: () => {
+    console.log('socket:' + 'connectSocket()');
     if (!get().socket) {
       if (!get().character.hasOwnProperty('character_id')) {
         return;

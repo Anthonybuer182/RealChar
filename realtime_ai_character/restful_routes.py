@@ -39,7 +39,9 @@ from realtime_ai_character.models.character import (
     GenerateHighlightRequest,
     GeneratePromptRequest,
 )
+from realtime_ai_character.logger import get_logger
 
+logger = get_logger(__name__)
 
 router = APIRouter()
 
@@ -51,6 +53,7 @@ MAX_FILE_UPLOADS = 5
 
 
 async def get_current_user(request: Request):
+    logger.warn(f"api:get_current_user()")
     """Returns the current user if the request is authenticated, otherwise None."""
     if os.getenv("USE_AUTH") == "true" and "Authorization" in request.headers:
         # Extracts the token from the Authorization header
@@ -76,11 +79,13 @@ async def get_current_user(request: Request):
 
 @router.get("/status")
 async def status():
+    logger.warn(f"api:status()")
     return {"status": "ok", "message": "RealChar is running smoothly!"}
 
 
 @router.get("/characters")
 async def characters(user=Depends(get_current_user)):
+    logger.warn(f"api:characters()")
     gcs_path = os.getenv("GCP_STORAGE_URL")
     if not gcs_path:
         raise HTTPException(
@@ -89,6 +94,7 @@ async def characters(user=Depends(get_current_user)):
         )
 
     def get_image_url(character):
+        logger.warn(f"api:get_image_url()")
         if character.data and "avatar_filename" in character.data:
             return f'{gcs_path}/{character.data["avatar_filename"]}'
         else:
@@ -120,6 +126,7 @@ async def characters(user=Depends(get_current_user)):
 
 @router.get("/configs")
 async def configs():
+    logger.warn(f"api:configs()")
     return {
         "llms": ["gpt-4", "gpt-3.5-turbo-16k", "claude-2", "meta-llama/Llama-2-70b-chat-hf"],
     }
@@ -127,6 +134,7 @@ async def configs():
 
 @router.get("/session_history")
 async def get_session_history(session_id: str, db: Session = Depends(get_db)):
+    logger.warn(f"api:get_session_history()")
     # Read session history from the database.
     interactions = await asyncio.to_thread(
         db.query(Interaction).filter(Interaction.session_id == session_id).all
@@ -140,6 +148,7 @@ async def get_session_history(session_id: str, db: Session = Depends(get_db)):
 async def post_feedback(
     feedback_request: FeedbackRequest, user=Depends(get_current_user), db: Session = Depends(get_db)
 ):
+    logger.warn(f"api:post_feedback()")
     if not user:
         raise HTTPException(
             status_code=http_status.HTTP_401_UNAUTHORIZED,
@@ -154,6 +163,7 @@ async def post_feedback(
 
 @router.post("/uploadfile")
 async def upload_file(file: UploadFile = File(...), user=Depends(get_current_user)):
+    logger.warn(f"api:upload_file()")
     if not user:
         raise HTTPException(
             status_code=http_status.HTTP_401_UNAUTHORIZED,
@@ -194,6 +204,7 @@ async def create_character(
     user=Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
+    logger.warn(f"api:create_character()")
     if not user:
         raise HTTPException(
             status_code=http_status.HTTP_401_UNAUTHORIZED,
@@ -216,6 +227,7 @@ async def edit_character(
     user=Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
+    logger.warn(f"api:edit_character()")
     if not user:
         raise HTTPException(
             status_code=http_status.HTTP_401_UNAUTHORIZED,
@@ -250,6 +262,7 @@ async def delete_character(
     user=Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
+    logger.warn(f"api:delete_character()")
     if not user:
         raise HTTPException(
             status_code=http_status.HTTP_401_UNAUTHORIZED,
@@ -278,6 +291,7 @@ async def delete_character(
 
 @router.post("/generate_audio")
 async def generate_audio(text: str, tts: Optional[str] = None, user=Depends(get_current_user)):
+    logger.warn(f"api:generate_audio()")
     if not isinstance(text, str) or text == "":
         raise HTTPException(
             status_code=http_status.HTTP_400_BAD_REQUEST,
@@ -324,6 +338,7 @@ async def generate_audio(text: str, tts: Optional[str] = None, user=Depends(get_
 
 @router.post("/clone_voice")
 async def clone_voice(filelist: list[UploadFile] = Form(...), user=Depends(get_current_user)):
+    logger.warn(f"api:clone_voice()")
     if not user:
         raise HTTPException(
             status_code=http_status.HTTP_401_UNAUTHORIZED,
@@ -387,6 +402,7 @@ async def clone_voice(filelist: list[UploadFile] = Form(...), user=Depends(get_c
 
 @router.post("/system_prompt")
 async def system_prompt(request: GeneratePromptRequest, user=Depends(get_current_user)):
+    logger.warn(f"api:system_prompt()")
     """Generate System Prompt according to name and background."""
     name = request.name
     background = request.background
@@ -406,6 +422,7 @@ async def system_prompt(request: GeneratePromptRequest, user=Depends(get_current
 
 @router.get("/conversations", response_model=list[dict])
 async def get_recent_conversations(user=Depends(get_current_user), db: Session = Depends(get_db)):
+    logger.warn(f"api:get_recent_conversations()")
     if not user:
         raise HTTPException(
             status_code=http_status.HTTP_401_UNAUTHORIZED,
@@ -443,6 +460,7 @@ async def get_recent_conversations(user=Depends(get_current_user), db: Session =
 async def get_character(
     character_id: str, db: Session = Depends(get_db), user=Depends(get_current_user)
 ):
+    logger.warn(f"api:get_character()")
     if not user:
         raise HTTPException(
             status_code=http_status.HTTP_401_UNAUTHORIZED,
@@ -471,6 +489,7 @@ async def get_character(
 async def generate_highlight(
     generate_highlight_request: GenerateHighlightRequest, user=Depends(get_current_user)
 ):
+    logger.warn(f"api:generate_highlight()")
     # Only allow for authorized user.
     if not user:
         raise HTTPException(

@@ -54,6 +54,7 @@ GREETING_TXT_MAP = {
 
 
 async def get_current_user(token: str):
+    logger.warn(f"socket:get_current_user()")
     """Heler function for auth with Firebase."""
     try:
         decoded_token = auth.verify_id_token(token)
@@ -71,6 +72,7 @@ class SessionAuthResult:
 
 
 async def check_session_auth(session_id: str, user_id: str, db: Session) -> SessionAuthResult:
+    logger.warn(f"socket:check_session_auth()")
     """
     Helper function to check if the session is authenticated.
     """
@@ -102,7 +104,7 @@ async def check_session_auth(session_id: str, user_id: str, db: Session) -> Sess
     )
 
 
-@router.websocket("/ws/{session_id}")
+@router.socket("/ws/{session_id}")
 async def websocket_endpoint(
     websocket: WebSocket,
     session_id: str = Path(...),
@@ -117,6 +119,7 @@ async def websocket_endpoint(
     speech_to_text=Depends(get_speech_to_text),
     default_text_to_speech=Depends(get_text_to_speech),
 ):
+    logger.warn(f"socket:websocket_endpoint()")
     # Default user_id to session_id. If auth is enabled and token is provided, use
     # the user_id from the token.
     user_id = str(session_id)
@@ -181,6 +184,7 @@ async def handle_receive(
     language: str,
     load_from_existing_session: bool = False,
 ):
+    logger.warn(f"socket:handle_receive()")
     try:
         conversation_history = ConversationHistory()
         if load_from_existing_session:
@@ -190,7 +194,7 @@ async def handle_receive(
         # 0. Receive client platform info (web, mobile, terminal)
         if not platform:
             data = await websocket.receive()
-            if data["type"] != "websocket.receive":
+            if data["type"] != "socket.receive":
                 raise WebSocketDisconnect(reason="disconnected")
             platform = data["text"]
 
@@ -219,7 +223,7 @@ async def handle_receive(
             )
             data = await websocket.receive()
 
-            if data["type"] != "websocket.receive":
+            if data["type"] != "socket.receive":
                 raise WebSocketDisconnect(reason="disconnected")
 
             if not character and "text" in data:
@@ -266,9 +270,11 @@ async def handle_receive(
         await manager.send_message(message="[end]\n", websocket=websocket)
 
         async def on_new_token(token):
+            logger.warn(f"socket:on_new_token()")
             return await manager.send_message(message=token, websocket=websocket)
 
         async def stop_audio():
+            logger.warn(f"socket:stop_audio()")
             if tts_task and not tts_task.done():
                 tts_event.set()
                 tts_task.cancel()
@@ -292,7 +298,7 @@ async def handle_receive(
 
         while True:
             data = await websocket.receive()
-            if data["type"] != "websocket.receive":
+            if data["type"] != "socket.receive":
                 raise WebSocketDisconnect(reason="disconnected")
 
             # show latency info
@@ -343,6 +349,7 @@ async def handle_receive(
                 message_id = str(uuid.uuid4().hex)[:16]
 
                 async def text_mode_tts_task_done_call_back(response):
+                    logger.warn(f"socket:text_mode_tts_task_done_call_back()")
                     # Send response to client, indicates the response is done
                     await manager.send_message(message=f"[end={message_id}]\n", websocket=websocket)
                     # Update conversation history
@@ -404,6 +411,7 @@ async def handle_receive(
                         continue
 
                     async def journal_transcribe(transcripts: list[Transcript], prompt: str = ""):
+                        logger.warn(f"socket:text_mode_tts_task_done_call_back()")
                         result: list[Transcript] = await asyncio.to_thread(
                             speech_to_text.transcribe_diarize,  # type: ignore
                             transcripts,
@@ -503,6 +511,7 @@ async def handle_receive(
                 message_id = str(uuid.uuid4().hex)[:16]
 
                 async def audio_mode_tts_task_done_call_back(response):
+                    logger.warn(f"socket:audio_mode_tts_task_done_call_back()")
                     # Send response to client, [=] indicates the response is done
                     await manager.send_message(message="[=]", websocket=websocket)
                     # Update conversation history
