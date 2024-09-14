@@ -104,7 +104,7 @@ async def check_session_auth(session_id: str, user_id: str, db: Session) -> Sess
     )
 
 
-@router.socket("/ws/{session_id}")
+@router.websocket("/ws/{session_id}")
 async def websocket_endpoint(
     websocket: WebSocket,
     session_id: str = Path(...),
@@ -194,7 +194,7 @@ async def handle_receive(
         # 0. Receive client platform info (web, mobile, terminal)
         if not platform:
             data = await websocket.receive()
-            if data["type"] != "socket.receive":
+            if data["type"] != "websocket.receive":
                 raise WebSocketDisconnect(reason="disconnected")
             platform = data["text"]
 
@@ -223,7 +223,7 @@ async def handle_receive(
             )
             data = await websocket.receive()
 
-            if data["type"] != "socket.receive":
+            if data["type"] != "websocket.receive":
                 raise WebSocketDisconnect(reason="disconnected")
 
             if not character and "text" in data:
@@ -298,7 +298,7 @@ async def handle_receive(
 
         while True:
             data = await websocket.receive()
-            if data["type"] != "socket.receive":
+            if data["type"] != "websocket.receive":
                 raise WebSocketDisconnect(reason="disconnected")
 
             # show latency info
@@ -411,7 +411,7 @@ async def handle_receive(
                         continue
 
                     async def journal_transcribe(transcripts: list[Transcript], prompt: str = ""):
-                        logger.warn(f"socket:text_mode_tts_task_done_call_back()")
+                        logger.warn(f"socket:journal_transcribe()")
                         result: list[Transcript] = await asyncio.to_thread(
                             speech_to_text.transcribe_diarize,  # type: ignore
                             transcripts,
